@@ -1,0 +1,54 @@
+<div ng-controller="resultCtrl">
+	<input type="hidden" ng-model="showForm" ng-init="showForm = true">
+	<input type="hidden" ng-model="showFormClass" ng-init="showFormClass = true">
+	<h4 ng-click="showFormFunc()" ng-class="showFormClass">Add / Edit Result</h4>
+	<div ng-show="showForm">
+		<form name="resForm">
+		<input type="date" ng-model="date">
+		<input type="text" ng-model="author" placeholder="Author" required></input>
+		<input type="checkbox" ng-model="teamcheck" ng-checked="teamcheck" required>
+		<table border=1>
+			<tr>
+				<td class="align-r">
+					<ul class="team">
+						<li ng-click="removeFromHost(player)" ng-repeat="player in hostTeam">{{player.name}}
+					</ul>	
+				</td>
+				<td class="goals"><input type="number" value='' min=0 placeholder=0 required ng-model="host"></td>
+				<td class="goals align-c"><b>VS</b></td>
+				<td class="goals"><input type="number" value='' min=0 placeholder=0 required ng-model="guest"></td>
+				<td>
+					<ul class="team">
+						<li ng-click="removeFromGuest(player)" ng-repeat="player in guestTeam">{{player.name}}
+					</ul>
+				</td>
+			</tr>
+		</table>
+		<button ng-disabled="resForm.$invalid" ng-click="add()">Save Result</button>
+		<p>{{error}}</p>				
+		<h5>Add to Host Team</h5>			
+		<h5>Add to Guest Team</h5>			
+		<ul class="select">
+			<li ng-click="addToHost(player)" ng-repeat="player in playerList | orderBy:'name'">{{player.name}}
+		</ul>
+		<ul class="select">
+			<li ng-click="addToGuest(player)" ng-repeat="player in playerList | orderBy:'name'">{{player.name}}
+		</ul>
+		</form>
+	</div>
+	<h4>Result List</h4>
+	
+		<table border=1 class="res">
+			<tr ng-repeat="result in resultsList | orderBy:'-date'" title="{{results.date | date:'EEEE | yyyy-MM-dd | HH:mm'}} | Author: {{results.author}}">
+				<td>{{result.hostTeam}}</td>
+				<td><b>vs</b></td>
+				<td>{{result.guestTeam}}</td>
+				<td><b>{{result.host}}&nbsp;:&nbsp;{{result.guest}}</b></td>
+				<td class="menu">
+					<a href="" ng-click="deleteGame(result)">Delete</a>
+				</td>
+			</tr>
+			
+		</table>
+	<hr>
+</div>

@@ -1,0 +1,11 @@
+
+		<ul ng-controller="resultCtrl" class="result-list" style="display: block;">
+
+			<li class="result-col one" ng-repeat="result in resultsList | orderBy:'-date'" title="{{results.date | date:'EEEE | yyyy-MM-dd | HH:mm'}} | Author: {{results.author}}">
+					<div class="game">{{result.hostTeam}}</div>
+					<div>vs</div>
+					<div class="game">{{result.guestTeam}}</div>
+					<div class="">{{result.host}}&nbsp;:&nbsp;{{result.guest}}</div>
+					<div class="" data-id="resulteraserbox"></div>
+			</li>
+		</ul>

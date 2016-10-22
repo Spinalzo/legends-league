@@ -1,0 +1,39 @@
+<div ng-controller="cardCtrl">
+	<input type="hidden" ng-model="showForm" ng-init="showForm = false">
+	<input type="hidden" ng-model="showFormClass" ng-init="showFormClass = ''">
+	<h4 ng-click="showFormFunc()" ng-class="showFormClass">Add / Edit Card</h4>
+	<div ng-show="showForm">
+		<table>
+			<tr class="hide"><td>id</td><td><input ng-model="id" ng-readonly="true"></td></tr>
+			<tr><td>Name</td><td><input ng-model="name" placeholder="New Card"></td></tr>
+			<tr><td>Points</td><td><input ng-model="points" type="number" placeholder="+/- 0"></td></tr>
+			<tr><td>Url</td><td><input ng-model="url" placeholder="www.example.com"></td></tr>
+		</table>
+		<button ng-click="add()">Add Card</button>
+		<button ng-click="saveChanges()">Save Changes</button>
+		<p>{{error}}</p>
+	</div>
+	<h4>Card List</h4>
+	<input ng-model="searchCard" placeholder="search...">
+	<table border="1">
+		<tr>
+			<th>Id</th>
+			<th>Card</th>
+			<th>Pts</th>
+			<th>Url</th>
+			<th>Action</th>
+		</tr>
+		<tr ng-repeat="card in cardList | filter:searchCard | orderBy:'-points'">
+			<td class="align-r">{{card.id}}</td>
+			<td>{{card.name}}</td>
+			<td class="align-r">{{(card.points) > 0 ? '+' : ''}}{{card.points}}</td>
+			<td>{{card.url}}</td>
+			<td>
+				<a href="" ng-click="loadDataIntoForm(card)">Edit</a> |
+				<a href="" ng-click="deleteCard(card)">Delete</a>
+			</td>
+		</tr>				
+	</table>
+	<p>Total: {{count}} Card(s)</p>
+	<hr>
+</div>
