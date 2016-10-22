@@ -1,0 +1,35 @@
+<div ng-controller="userCtrl">
+	<input type="hidden" ng-model="showForm" ng-init="showForm = false">
+	<input type="hidden" ng-model="showFormClass" ng-init="showFormClass = ''">
+	<h4 ng-click="showFormFunc()" ng-class="showFormClass">Add / Edit User</h4>
+	<div ng-show="showForm">
+		<table>
+			<tr class="hide"><td>id</td><td><input ng-model="id" ng-readonly="true"></td></tr>
+			<tr><td>Name</td><td><input ng-model="name" placeholder="New User"></td></tr>
+			<tr><td>Role</td><td>
+				<select ng-model="role">
+					<option ng-repeat="rights in ['Admin', 'User']">{{rights}}</option>				
+				</select>
+			</td></tr>
+		</table>
+		<button ng-click="add()">Add User</button>
+		<button ng-click="saveChanges()">Save Changes</button>
+		<p>{{error}}</p>
+	</div>
+	<h4>User List</h4>
+	<input ng-model="searchUser" placeholder="search...">
+	<table border="1">
+		<tr><th>Id</th><th>Name</th><th>Role</th><th>Action</th></tr>
+		<tr ng-repeat="user in userList | filter:searchUser | orderBy:'name'">
+			<td class="align-r">{{user.id}}</td>
+			<td>{{user.name}}</td>
+			<td>{{user.role}}</td>
+			<td>
+				<a href="" ng-click="loadDataIntoForm(user)">Edit</a> |
+				<a href="" ng-click="deleteUser(user)">Delete</a> 
+			</td>
+		</tr>				
+	</table>
+	<p>Total: {{count}} Users(s)</p>
+	<hr>
+</div>

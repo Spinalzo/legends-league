@@ -1,0 +1,176 @@
+* {
+	box-sizing: border-box;
+	font-family: Tahoma, Verdana, Arial, sans-serif;
+	color: #333:
+}
+html {
+	width: 100%;
+	height: 100%;
+}
+body {
+	max-width: 50rem;
+	margin: 0 auto;
+	height: 100%;
+	font-size: .8rem;
+	padding: 0 1rem;
+}
+h1 {
+	font: 0/0 a;
+	color: transparent;
+	height: 7vw;
+	min-height: 40px;
+	max-height: 80px;
+	background: #fff url('../img/logo.svg') no-repeat center center;
+	background-size: contain;
+}
+table {
+	border-collapse: collapse;
+	border: none;
+	margin: 0 auto .3rem auto;
+}
+caption, h4 {
+	font-size: 1rem;
+	font-weight: bold;
+	margin-bottom: .4rem;
+}
+h4:first-of-type {cursor: pointer;}
+h4:first-of-type:after {
+	color: #777;
+	content: '▼';
+	margin-left: .5rem;
+}
+h4:first-of-type.open:after {content: '▲';}
+h4 + input {
+	display: block;
+	margin: 0 auto .4rem auto;
+}
+tr.hide {display: none;}
+th, td {
+	padding: .3rem;
+	border-color: #aaa;
+}
+th:first-of-type{border-radius: .3rem 0 0 0;}
+tr:last-of-type td:last-of-type{border-radius: 0 0 .3rem 0;}
+td {text-align: left;}
+td.align-r {text-align: right; padding-right: .4rem;}
+td.align-c {text-align: center;}
+hr { 
+	margin: .5rem 0 1rem 0;
+	border: 0;
+    height: 1px;
+    background: #333;
+    background-image: linear-gradient(to right, #ccc, #333, #ccc); 
+}
+nav {
+	font-size: .9rem;
+	text-align: center;
+}
+nav ul {
+	list-style: none;
+	padding: 0;
+	margin-top: .2rem;
+	margin-bottom: calc(.5vw * 2);
+}
+nav li {
+	display: inline-block;
+	border: 1px solid #777;
+	cursor: pointer;
+	box-shadow: 1px 1px 2px #999, inset 0 0 .3rem #777;
+	font-weight: bold;
+	text-shadow: 0 0 1px #000, 0 0 1px #000, 0 0 2px #000 , 0 0 2px #000;
+	color: #fff;
+	transition: all .05s linear;
+	background-color: #ddd;
+	background-image: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,1), rgba(255,255,255,0));
+	padding: .3vw 2vw;
+}
+nav li:first-of-type{border-radius: .3rem 0 0 .3rem;}
+nav li:last-of-type{border-radius: 0 .3rem .3rem 0;}
+nav li.show {
+	text-shadow: 0 0 .5rem #fff, 0 0 1px #000, 0 0 1px #000, 0 0 2px #000 , 0 0 2px #000;
+	background-color: #1486cc;
+	background-image: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.3), rgba(255,255,255,0));
+	box-shadow: 1px 1px 2px #000, inset 0 0 .3rem #fff;
+	border-color: #555;
+	color: #fff;
+}
+section {text-align: center;}
+
+section:not(.show) {display: none;}
+
+section a {color: #333;}
+p {margin-top: .5rem; height: .8rem;}
+input, select {
+	border-top-left-radius: .3rem;
+	border-bottom-right-radius: .3rem;
+	border: 1px solid #aaa;
+	padding: .1rem .3rem;
+}
+section > div > div {
+	transition: .5s linear all;
+}
+
+#results ul.select {
+	list-style: none;
+	padding: 0 0 .05rem 0;
+	display: inline-block;
+	width: 45%;
+	margin: 0 auto .5rem auto;
+	text-align: left;	
+	vertical-align: top;
+	border: 1px solid #ccc;
+}
+#results h5 {
+	display: inline-block;
+	width: 45%;
+	margin: 1rem auto .5rem auto;
+	text-align: left;	
+	vertical-align: top;
+	padding-left: .5rem;
+	
+}
+#results ul.team{
+	margin: 0;
+	padding: 0;
+}
+#results ul li {display: inline-block; cursor: pointer;}
+#results ul.select li {
+	border: 1px solid #ccc;
+	padding: .2rem .5rem;
+	margin: .1rem .2rem;
+	border-radius: .3rem;
+}
+#results ul.team li {margin-left: .2rem;}
+#results ul.team li:after {content: '|'; }
+#results ul.team li:last-of-type:after{content: '';}
+#results table {width: 100%; table-layout: fixed;}
+#results td {border: none;}
+#results .goals {width: 3rem;}
+#results .goals input{width: 2.5rem; margin: 0 auto; font-size: 1.2rem; text-align: center;}
+#results input{text-align: center;}
+#results p:empty{display: none;}
+#results button {
+	display: block;
+	margin: .3rem auto;
+}
+#results input[type="checkbox"] {display: none;}
+.ng-invalid.ng-touched {
+	border-color: #c44;
+}
+#results .res input {
+	width: 100%;
+	border: none;
+}
+#results .res {
+	table-layout: fixed;
+	width: auto;
+}
+#results .res td {
+	border-bottom: 1px solid #ccc;
+	border-radius: 0;
+	font-size: 1rem;
+}
+#results td.menu {
+	color: #555;
+	font-size: .8rem;
+}

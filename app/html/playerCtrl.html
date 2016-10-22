@@ -1,0 +1,33 @@
+<div ng-controller="playerCtrl">
+	<input type="hidden" ng-model="showForm" ng-init="showForm = false">
+	<input type="hidden" ng-model="showFormClass" ng-init="showFormClass = ''">
+	<h4 ng-click="showFormFunc()" ng-class="showFormClass">Add / Edit Player</h4>
+	<div ng-show="showForm">
+		<table>
+			<tr class="hide"><td>id</td><td><input ng-model="id" ng-readonly="true"></td></tr>
+			<tr><td>Name</td><td><input ng-model="name" placeholder="New Player"></td></tr>
+			<tr><td>Nationality</td><td><input ng-model="nationality" placeholder="Nationality"></td></tr>
+			<tr><td>Avatar</td><td><input ng-model="avatar" placeholder="Avatar"></td></tr>
+		</table>
+		<button ng-click="add()">Add Player</button>
+		<button ng-click="saveChanges()">Save Changes</button>
+		<p>{{error}}</p>
+	</div>
+	<h4>Player List</h4>
+	<input ng-model="searchPlayer" placeholder="search...">
+	<table border="1">
+		<tr><th>Id</th><th>Name/Alias</th><th>Natio.</th><th>Avatar</th><th>Action</th></tr>
+		<tr ng-repeat="player in playerList | filter:searchPlayer | orderBy:'name'">
+			<td class="align-r">{{player.id}}</td>
+			<td>{{player.name}}</td>
+			<td>{{player.nationality}}</td>
+			<td>{{player.avatar}}</td>
+			<td>
+				<a href="" ng-click="loadDataIntoForm(player)">Edit</a> |
+				<a href="" ng-click="deletePlayer(player)">Delete</a>
+			</td>
+		</tr>				
+	</table>
+	<p>Total: {{count}} Player(s)</p>
+	<hr>
+</div>
