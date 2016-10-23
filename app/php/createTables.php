@@ -216,10 +216,57 @@ $db->exec('CREATE VIEW IF NOT EXISTS tbl_datablob AS
 		tbl_ratingsRanking.techniqueSum,
 		tbl_ratingsRanking.tacticSum,
 		tbl_ratingsRanking.teamworkSum,		
-		tbl_ratingsRanking.overallSum		
+		tbl_ratingsRanking.overallSum,
+		tbl_ratingsTrend.technique AS techniqueTrend,
+		tbl_ratingsTrend.tactic AS tacticTrend,
+		tbl_ratingsTrend.teamwork AS teamworkTrend
 	FROM tbl_resultsRanking 
 		LEFT JOIN tbl_cardsRanking ON tbl_resultsRanking.id = tbl_cardsRanking.id
 		LEFT JOIN tbl_ratingsRanking ON tbl_resultsRanking.id = tbl_ratingsRanking.id
+		LEFT JOIN tbl_ratingsTrend ON tbl_resultsRanking.id = tbl_ratingsTrend.id
+');
+
+
+if($update_views) $db->exec('DROP VIEW IF EXISTS tbl_ratingsWithDate');
+$db->exec('CREATE VIEW IF NOT EXISTS tbl_ratingsWithDate AS
+	SELECT 
+		playerId,
+		gameId,
+		technique,
+		tactic,
+		teamwork,
+		DATE(date) AS datum, 
+		TIME(date) AS zeit
+	FROM tbl_rating
+		JOIN tbl_game ON tbl_rating.gameId = tbl_game.id
+	ORDER BY datum DESC, zeit DESC
+');
+
+if($update_views) $db->exec('DROP VIEW IF EXISTS tbl_ratingsTrend');
+$db->exec('CREATE VIEW IF NOT EXISTS tbl_ratingsTrend AS
+	SELECT 
+		id,
+		name,
+		nationality,
+		avatar,
+		(SELECT AVG(technique) FROM
+			(SELECT technique FROM tbl_ratingsWithDate WHERE playerId = id LIMIT 3
+				)) AS technique,
+		(SELECT AVG(tactic) FROM
+			(SELECT tactic FROM tbl_ratingsWithDate WHERE playerId = id LIMIT 3
+				)) AS tactic,
+		(SELECT AVG(teamwork) FROM
+			(SELECT teamwork FROM tbl_ratingsWithDate WHERE playerId = id LIMIT 3
+				)) AS teamwork,
+		(SELECT COUNT(playerId) FROM
+			(SELECT playerId FROM tbl_ratingsWithDate WHERE playerId = id LIMIT 3
+				)) AS trendRatings,
+		(SELECT COUNT(playerId) FROM tbl_ratingsWithDate WHERE playerId = id
+			) AS allRatings		
+	FROM tbl_player
+		JOIN tbl_rating ON tbl_rating.playerId = tbl_player.id
+	WHERE trendRatings > 2
+	GROUP BY name
 ');
 
 
