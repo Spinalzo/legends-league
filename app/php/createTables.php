@@ -1,4 +1,8 @@
 <?php
+
+$update_views = true;
+$insert_dummy_data = false;
+
 try {
 
 
@@ -68,7 +72,7 @@ $db->exec("CREATE VIEW IF NOT EXISTS guestTeams AS
 		GROUP BY gameId
 ");
 
-// $db->exec("DROP VIEW IF EXISTS tbl_resultsList");
+if($update_views) $db->exec("DROP VIEW IF EXISTS tbl_resultsList");
 $db->exec("CREATE VIEW IF NOT EXISTS tbl_resultsList AS
 	SELECT hostTeam, host, guest, guestTeam, date, date(date) AS datum, time(date) AS zeit, author
 	FROM hostTeams
@@ -81,9 +85,10 @@ $db->exec("CREATE VIEW IF NOT EXISTS tbl_resultsList AS
 
 
 
-// $db->exec("DROP VIEW IF EXISTS tbl_resultsRanking");
+if($update_views) $db->exec("DROP VIEW IF EXISTS tbl_resultsRanking");
 $db->exec("CREATE VIEW IF NOT EXISTS tbl_resultsRanking AS
 	SELECT
+		id,
 		name,
 		nationality,
 		avatar,
@@ -116,9 +121,114 @@ $db->exec("CREATE VIEW IF NOT EXISTS tbl_resultsRanking AS
 
 ");
 
+if($update_views) $db->exec('DROP VIEW IF EXISTS tbl_cardsList');
+$db->exec('CREATE VIEW IF NOT EXISTS tbl_cardsList AS
+	SELECT 
+		tbl_player.id, 
+		tbl_player.name, 
+		tbl_player.nationality, 
+		tbl_player.avatar, 
+		points, 
+		url,
+		category		
+	FROM tbl_player JOIN tbl_vote ON tbl_vote.playerId = tbl_player.id 
+	JOIN tbl_card ON tbl_vote.cardId = tbl_card.id
+	ORDER BY tbl_player.name
+');
 
-$db->exec('DROP VIEW tbl_cardsPerPlayer');
-$db->exec('CREATE VIEW tbl_cardsPerPlayer AS
+
+if($update_views) $db->exec('DROP VIEW IF EXISTS tbl_ratingsList');
+$db->exec('CREATE VIEW IF NOT EXISTS tbl_ratingsList AS
+	SELECT 
+		tbl_player.id, 
+		tbl_player.name, 
+		tbl_player.nationality, 
+		tbl_player.avatar, 
+		technique, 
+		tactic,
+		teamwork,
+		CAST((technique + tactic + teamwork)AS FLOAT) / 3 AS overall
+	FROM tbl_player JOIN tbl_rating ON tbl_rating.playerId = tbl_player.id 
+	ORDER BY tbl_player.name
+');
+
+
+
+
+if($update_views) $db->exec('DROP VIEW IF EXISTS tbl_ratingsRanking');
+$db->exec('CREATE VIEW IF NOT EXISTS tbl_ratingsRanking AS
+	SELECT 
+		tbl_player.id, 
+		tbl_player.name, 
+		tbl_player.nationality, 
+		tbl_player.avatar,
+		COUNT(tbl_player.id) AS ratingCount, 
+		SUM(technique) AS techniqueSum, 
+		SUM(tactic) AS tacticSum,
+		SUM(teamwork) AS teamworkSum,
+		SUM(technique + tactic + teamwork) as overallSum,
+		AVG(technique) AS techniqueAvg, 
+		AVG(tactic) AS tacticAvg,
+		AVG(teamwork) AS teamworkAvg
+	FROM tbl_player JOIN tbl_rating ON tbl_rating.playerId = tbl_player.id 
+	GROUP BY tbl_player.id
+	ORDER BY overallSum DESC, ratingCount ASC
+');
+
+if($update_views) $db->exec('DROP VIEW IF EXISTS tbl_cardsRanking');
+$db->exec('CREATE VIEW IF NOT EXISTS tbl_cardsRanking AS
+	SELECT 
+		tbl_player.id, 
+		tbl_player.name, 
+		tbl_player.nationality, 
+		tbl_player.avatar,
+		COUNT(tbl_player.id) AS cardCount, 
+		SUM(points) as cardPoints, 
+		AVG(points) as cardPointsAvg 
+	FROM tbl_player JOIN tbl_vote ON tbl_vote.playerId = tbl_player.id 
+	JOIN tbl_card ON tbl_vote.cardId = tbl_card.id
+	GROUP BY tbl_player.id
+	ORDER BY cardPointsAvg DESC, cardPoints DESC, cardCount ASC, tbl_player.name ASC
+');
+
+
+if($update_views) $db->exec('DROP VIEW IF EXISTS tbl_datablob');
+$db->exec('CREATE VIEW IF NOT EXISTS tbl_datablob AS
+	SELECT 
+		tbl_resultsRanking.id,
+		tbl_resultsRanking.name, 
+		tbl_resultsRanking.nationality, 
+		tbl_resultsRanking.avatar, 
+		tbl_resultsRanking.games, 
+		tbl_resultsRanking.points, 
+		tbl_resultsRanking.wins, 
+		tbl_resultsRanking.draws, 
+		tbl_resultsRanking.losses, 
+		tbl_resultsRanking.goals, 
+		tbl_resultsRanking.goalsAgainst, 
+		tbl_resultsRanking.goalsDiff, 
+		tbl_cardsRanking.cardPoints, 
+		tbl_cardsRanking.cardCount, 
+		tbl_cardsRanking.cardPointsAvg,
+		tbl_ratingsRanking.techniqueAvg,
+		tbl_ratingsRanking.tacticAvg,
+		tbl_ratingsRanking.teamworkAvg,
+		tbl_ratingsRanking.techniqueSum,
+		tbl_ratingsRanking.tacticSum,
+		tbl_ratingsRanking.teamworkSum,		
+		tbl_ratingsRanking.overallSum		
+	FROM tbl_resultsRanking 
+		LEFT JOIN tbl_cardsRanking ON tbl_resultsRanking.id = tbl_cardsRanking.id
+		LEFT JOIN tbl_ratingsRanking ON tbl_resultsRanking.id = tbl_ratingsRanking.id
+');
+
+
+
+
+
+
+if($update_views) $db->exec('DROP VIEW IF EXISTS tbl_cardsPerPlayer');
+$db->exec('CREATE VIEW IF NOT EXISTS tbl_cardsPerPlayer AS
 	SELECT 
 		tbl_player.id, 
 		tbl_player.name, 
@@ -130,17 +240,10 @@ $db->exec('CREATE VIEW tbl_cardsPerPlayer AS
 	GROUP BY tbl_player.id
 ');
 
-$db->exec('DROP VIEW tbl_datablob');
-$db->exec('CREATE VIEW tbl_datablob AS
-	SELECT 
-		* 
-	FROM tbl_resultsRanking 
-		LEFT JOIN tbl_cardsPerPlayer ON tbl_resultsRanking.id = tbl_cardsPerPlayer.id
-');
 
 
-// $db->exec('DROP VIEW tbl_ratingsAVG');
-$db->exec('CREATE VIEW tbl_ratingsAVG AS
+if($update_views) $db->exec('DROP VIEW IF EXISTS tbl_ratingsAVG');
+$db->exec('CREATE VIEW IF NOT EXISTS tbl_ratingsAVG AS
 	SELECT 
 		AVG(technique) AS technique,
 		AVG(tactic) AS tactic,
@@ -151,24 +254,25 @@ $db->exec('CREATE VIEW tbl_ratingsAVG AS
 
 //DUMMY-DATA
 
-$new_player = $db->prepare('INSERT OR IGNORE INTO tbl_player (name, nationality, avatar) VALUES (:name, :nationality, :avatar)');
-$new_player->execute(array(':name' => 'Zalippi', ':nationality' => 'Italian Stallion', ':avatar' => 'zal.png'));
-$new_player->execute(array(':name' => 'Svennson', ':nationality' => 'Swedish', ':avatar' => 'jahuhuiti.png'));
-$new_player->execute(array(':name' => 'Bobo', ':nationality' => 'Aarisch', ':avatar' => 'glatze.png'));
-$new_player->execute(array(':name' => 'El Horn', ':nationality' => 'Unknown', ':avatar' => 'steppenzausel.png'));
+if($insert_dummy_data) {
+	$new_player = $db->prepare('INSERT OR IGNORE INTO tbl_player (name, nationality, avatar) VALUES (:name, :nationality, :avatar)');
+	$new_player->execute(array(':name' => 'Zalippi', ':nationality' => 'Italian Stallion', ':avatar' => 'zal.png'));
+	$new_player->execute(array(':name' => 'Svennson', ':nationality' => 'Swedish', ':avatar' => 'jahuhuiti.png'));
+	$new_player->execute(array(':name' => 'Bobo', ':nationality' => 'Germanisch', ':avatar' => 'glatze.png'));
+	$new_player->execute(array(':name' => 'El Horn', ':nationality' => 'Unknown', ':avatar' => 'steppenzausel.png'));
 
-$new_game = $db->prepare('INSERT OR IGNORE INTO tbl_game (host, guest, date, author) VALUES (:host, :guest, :date, :author)');
-$new_game->execute(array(':host' => 2, ':guest' => 0, ':date' => '2001-01-01T11:00:00.000Z', ':author' => 'System'));
-$new_game->execute(array(':host' => 3, ':guest' => 3, ':date' => '2001-01-01T11:30:00.000Z', ':author' => 'System'));
+	$new_game = $db->prepare('INSERT OR IGNORE INTO tbl_game (host, guest, date, author) VALUES (:host, :guest, :date, :author)');
+	$new_game->execute(array(':host' => 2, ':guest' => 0, ':date' => '2001-01-01T11:00:00.000Z', ':author' => 'System'));
+	$new_game->execute(array(':host' => 3, ':guest' => 3, ':date' => '2001-01-01T11:30:00.000Z', ':author' => 'System'));
 
-$new_matchup = $db->prepare('INSERT OR IGNORE INTO tbl_matchup (playerId, gameId, team) VALUES (:playerId, :gameId, :team)');
-$new_matchup->execute(array(':playerId' => 2, ':gameId' => 1, ':team' => 'host'));
-$new_matchup->execute(array(':playerId' => 1, ':gameId' => 1, ':team' => 'guest'));
-$new_matchup->execute(array(':playerId' => 3, ':gameId' => 1, ':team' => 'guest'));
-$new_matchup->execute(array(':playerId' => 4, ':gameId' => 2, ':team' => 'host'));
-$new_matchup->execute(array(':playerId' => 1, ':gameId' => 2, ':team' => 'host'));
-$new_matchup->execute(array(':playerId' => 2, ':gameId' => 2, ':team' => 'guest'));
-
+	$new_matchup = $db->prepare('INSERT OR IGNORE INTO tbl_matchup (playerId, gameId, team) VALUES (:playerId, :gameId, :team)');
+	$new_matchup->execute(array(':playerId' => 2, ':gameId' => 1, ':team' => 'host'));
+	$new_matchup->execute(array(':playerId' => 1, ':gameId' => 1, ':team' => 'guest'));
+	$new_matchup->execute(array(':playerId' => 3, ':gameId' => 1, ':team' => 'guest'));
+	$new_matchup->execute(array(':playerId' => 4, ':gameId' => 2, ':team' => 'host'));
+	$new_matchup->execute(array(':playerId' => 1, ':gameId' => 2, ':team' => 'host'));
+	$new_matchup->execute(array(':playerId' => 2, ':gameId' => 2, ':team' => 'guest'));
+}
 
 
 } catch (PDOException $e) {
