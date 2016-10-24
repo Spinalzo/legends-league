@@ -74,7 +74,7 @@ $db->exec("CREATE VIEW IF NOT EXISTS guestTeams AS
 
 if($update_views) $db->exec("DROP VIEW IF EXISTS tbl_resultsList");
 $db->exec("CREATE VIEW IF NOT EXISTS tbl_resultsList AS
-	SELECT hostTeam, host, guest, guestTeam, date, date(date) AS datum, time(date) AS zeit, author
+	SELECT hostTeam, host, guest, guestTeam, date, date(date) AS datum, time(date) AS zeit, gameId, author
 	FROM hostTeams
 		JOIN guestTeams ON hostTeams.gameId = guestTeams.gameId
 		JOIN tbl_game ON tbl_game.id = hostTeams.gameId
