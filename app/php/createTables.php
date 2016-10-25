@@ -1,7 +1,8 @@
 <?php
 
-$update_views = true;
+$update_views = false;
 $insert_dummy_data = false;
+$debug_output = false;
 
 try {
 
@@ -13,12 +14,22 @@ $db->exec('CREATE TABLE IF NOT EXISTS tbl_user (
 	role	TEXT NOT NULL CHECK(TRIM(role) <> ""),
 	pass	TEXT NOT NULL DEFAULT "xxx"
 )');
+if($debug_output) {
+	echo "tbl_user: ";
+	print_r($db->errorInfo());
+	echo "<br>";
+}
 $db->exec('CREATE TABLE IF NOT EXISTS tbl_player (
 	id		INTEGER PRIMARY KEY,
 	name	TEXT UNIQUE NOT NULL COLLATE NOCASE CHECK(TRIM(name) <> ""),
 	nationality	TEXT NOT NULL CHECK(TRIM(nationality) <> ""),
 	avatar	TEXT NOT NULL CHECK(TRIM(avatar) <> "")
 )');
+if($debug_output) {
+	echo "tbl_player: ";
+	print_r($db->errorInfo());
+	echo "<br>";
+}
 $db->exec('CREATE TABLE IF NOT EXISTS tbl_card (
 	id		INTEGER PRIMARY KEY,
 	name	TEXT UNIQUE NOT NULL COLLATE NOCASE CHECK(TRIM(name) <> ""),
@@ -26,6 +37,11 @@ $db->exec('CREATE TABLE IF NOT EXISTS tbl_card (
 	url		TEXT NOT NULL CHECK(TRIM(url) <> ""),
 	category TEXT NOT NULL CHECK(TRIM(category) <> "")
 )');
+if($debug_output) {
+	echo "tbl_card: ";
+	print_r($db->errorInfo());
+	echo "<br>";
+}
 $db->exec('CREATE TABLE IF NOT EXISTS tbl_game (
 	id		INTEGER PRIMARY KEY,
 	host	INTEGER NOT NULL,
@@ -33,12 +49,22 @@ $db->exec('CREATE TABLE IF NOT EXISTS tbl_game (
 	date	DATETIME UNIQUE DEFAULT CURRENT_TIMESTAMP,
 	author	TEXT DEFAULT "John Doe"
 )');
+if($debug_output) {
+	echo "tbl_game: ";
+	print_r($db->errorInfo());
+	echo "<br>";
+}
 $db->exec('CREATE TABLE IF NOT EXISTS tbl_matchup (
 	playerId	INTEGER REFERENCES tbl_player(id) ON DELETE CASCADE,
 	gameId		INTEGER REFERENCES tbl_game(id) ON DELETE CASCADE,
 	team		TEXT NOT NULL CHECK(team="host" OR team="guest"),
 	PRIMARY KEY (playerId, gameId)
 )');
+if($debug_output) {
+	echo "tbl_matchup: ";
+	print_r($db->errorInfo());
+	echo "<br>";
+}
 $db->exec('CREATE TABLE IF NOT EXISTS tbl_rating (
 	playerId	INTEGER REFERENCES tbl_player(id) ON DELETE CASCADE,
 	gameId		INTEGER REFERENCES tbl_game(id) ON DELETE CASCADE,
@@ -47,13 +73,22 @@ $db->exec('CREATE TABLE IF NOT EXISTS tbl_rating (
 	teamwork	INTEGER NOT NULL,
 	PRIMARY KEY (playerId, gameId)
 )');
+if($debug_output) {
+	echo "tbl_rating: ";
+	print_r($db->errorInfo());
+	echo "<br>";
+}
 $db->exec('CREATE TABLE IF NOT EXISTS tbl_vote (
 	playerId	INTEGER REFERENCES tbl_player(id) ON DELETE CASCADE,
 	gameId		INTEGER REFERENCES tbl_game(id) ON DELETE CASCADE,
-	cardId		INTEGER REFERENCES tbl_card(id) ON DELETE CASCADE
+	cardId		INTEGER REFERENCES tbl_card(id) ON DELETE CASCADE,
 	PRIMARY KEY (playerId, gameId)
 )');
-
+if($debug_output) {
+	echo "tbl_vote: ";
+	print_r($db->errorInfo());
+	echo "<br>";
+}
 
 
 $db->exec("CREATE VIEW IF NOT EXISTS hostTeams AS
@@ -63,6 +98,11 @@ $db->exec("CREATE VIEW IF NOT EXISTS hostTeams AS
 		WHERE team = 'host'
 		GROUP BY gameId
 ");
+if($debug_output) {
+	echo "hostTeams: ";
+	print_r($db->errorInfo());
+	echo "<br>";
+}
 
 $db->exec("CREATE VIEW IF NOT EXISTS guestTeams AS
 	SELECT GROUP_CONCAT(name, ', ') AS guestTeam, gameId from tbl_player
@@ -71,6 +111,13 @@ $db->exec("CREATE VIEW IF NOT EXISTS guestTeams AS
 		WHERE team = 'guest'
 		GROUP BY gameId
 ");
+if($debug_output) {
+	echo "guestTeams: ";
+	print_r($db->errorInfo());
+	echo "<br>";
+}
+
+
 
 if($update_views) $db->exec("DROP VIEW IF EXISTS tbl_resultsList");
 $db->exec("CREATE VIEW IF NOT EXISTS tbl_resultsList AS
@@ -80,6 +127,12 @@ $db->exec("CREATE VIEW IF NOT EXISTS tbl_resultsList AS
 		JOIN tbl_game ON tbl_game.id = hostTeams.gameId
 	ORDER BY date DESC
 ");
+
+if($debug_output) {
+	echo "resultsList: ";
+	print_r($db->errorInfo());
+	echo "<br>";
+}
 
 
 
@@ -120,6 +173,12 @@ $db->exec("CREATE VIEW IF NOT EXISTS tbl_resultsRanking AS
 	ORDER BY points DESC
 
 ");
+if($debug_output) {
+	echo "resultsRanking: ";
+	print_r($db->errorInfo());
+	echo "<br>";
+}
+
 
 if($update_views) $db->exec('DROP VIEW IF EXISTS tbl_cardsList');
 $db->exec('CREATE VIEW IF NOT EXISTS tbl_cardsList AS
@@ -135,6 +194,11 @@ $db->exec('CREATE VIEW IF NOT EXISTS tbl_cardsList AS
 	JOIN tbl_card ON tbl_vote.cardId = tbl_card.id
 	ORDER BY tbl_player.name
 ');
+if($debug_output) {
+	echo "cardsList: ";
+	print_r($db->errorInfo());
+	echo "<br>";
+}
 
 
 if($update_views) $db->exec('DROP VIEW IF EXISTS tbl_ratingsList');
@@ -151,7 +215,11 @@ $db->exec('CREATE VIEW IF NOT EXISTS tbl_ratingsList AS
 	FROM tbl_player JOIN tbl_rating ON tbl_rating.playerId = tbl_player.id 
 	ORDER BY tbl_player.name
 ');
-
+if($debug_output) {
+	echo "ratingsList: ";
+	print_r($db->errorInfo());
+	echo "<br>";
+}
 
 
 
@@ -174,6 +242,11 @@ $db->exec('CREATE VIEW IF NOT EXISTS tbl_ratingsRanking AS
 	GROUP BY tbl_player.id
 	ORDER BY overallSum DESC, ratingCount ASC
 ');
+if($debug_output) {
+	echo "ratingsRanking: ";
+	print_r($db->errorInfo());
+	echo "<br>";
+}
 
 if($update_views) $db->exec('DROP VIEW IF EXISTS tbl_cardsRanking');
 $db->exec('CREATE VIEW IF NOT EXISTS tbl_cardsRanking AS
@@ -190,6 +263,11 @@ $db->exec('CREATE VIEW IF NOT EXISTS tbl_cardsRanking AS
 	GROUP BY tbl_player.id
 	ORDER BY cardPointsAvg DESC, cardPoints DESC, cardCount ASC, tbl_player.name ASC
 ');
+if($debug_output) {
+	echo "cardsRanking: ";
+	print_r($db->errorInfo());
+	echo "<br>";
+}
 
 
 if($update_views) $db->exec('DROP VIEW IF EXISTS tbl_datablob');
@@ -225,6 +303,11 @@ $db->exec('CREATE VIEW IF NOT EXISTS tbl_datablob AS
 		LEFT JOIN tbl_ratingsRanking ON tbl_resultsRanking.id = tbl_ratingsRanking.id
 		LEFT JOIN tbl_ratingsTrend ON tbl_resultsRanking.id = tbl_ratingsTrend.id
 ');
+if($debug_output) {
+	echo "datablob: ";
+	print_r($db->errorInfo());
+	echo "<br>";
+}
 
 
 if($update_views) $db->exec('DROP VIEW IF EXISTS tbl_ratingsWithDate');
@@ -241,6 +324,11 @@ $db->exec('CREATE VIEW IF NOT EXISTS tbl_ratingsWithDate AS
 		JOIN tbl_game ON tbl_rating.gameId = tbl_game.id
 	ORDER BY datum DESC, zeit DESC
 ');
+if($debug_output) {
+	echo "ratingsWithDate: ";
+	print_r($db->errorInfo());
+	echo "<br>";
+}
 
 if($update_views) $db->exec('DROP VIEW IF EXISTS tbl_ratingsTrend');
 $db->exec('CREATE VIEW IF NOT EXISTS tbl_ratingsTrend AS
@@ -268,7 +356,11 @@ $db->exec('CREATE VIEW IF NOT EXISTS tbl_ratingsTrend AS
 	WHERE trendRatings > 2
 	GROUP BY name
 ');
-
+if($debug_output) {
+	echo "ratings_trend: ";
+	print_r($db->errorInfo());
+	echo "<br>";
+}
 
 
 
@@ -286,7 +378,11 @@ $db->exec('CREATE VIEW IF NOT EXISTS tbl_cardsPerPlayer AS
 	JOIN tbl_card ON tbl_vote.cardId = tbl_card.id
 	GROUP BY tbl_player.id
 ');
-
+if($debug_output) {
+	echo "cardsPerPlayer: ";
+	print_r($db->errorInfo());
+	echo "<br>";
+}
 
 
 if($update_views) $db->exec('DROP VIEW IF EXISTS tbl_ratingsAVG');
@@ -297,6 +393,11 @@ $db->exec('CREATE VIEW IF NOT EXISTS tbl_ratingsAVG AS
 		AVG(teamwork) AS teamwork
 	FROM tbl_rating
 ');
+if($debug_output) {
+	echo "ratingsAVG: ";
+	print_r($db->errorInfo());
+	echo "<br>";
+}
 
 
 //DUMMY-DATA
