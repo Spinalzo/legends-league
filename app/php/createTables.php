@@ -187,7 +187,8 @@ $db->exec('CREATE VIEW IF NOT EXISTS tbl_cardsList AS
 		tbl_player.name, 
 		tbl_player.nationality, 
 		tbl_player.avatar, 
-		points, 
+		points,
+		tbl_card.name AS cardname,
 		url,
 		category		
 	FROM tbl_player JOIN tbl_vote ON tbl_vote.playerId = tbl_player.id 
